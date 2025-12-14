@@ -1,0 +1,7 @@
+prefix=/home/sam/Documents/Project Udemy/ml_project_1/venv
+includedir=${prefix}/include
+
+Name: XwaylandProto
+Description: Xwayland extension headers
+Version: 1.0
+Cflags: -I${includedir}
