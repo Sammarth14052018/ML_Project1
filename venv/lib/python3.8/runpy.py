@@ -56,7 +56,7 @@ class _ModifiedArgv0(object):
 
     def __exit__(self, *args):
         self.value = self._sentinel
-        sys.argv[0] = self._saved_value
+        sys.argv[0] = self._saved_value  # type: ignore
 
 # TODO: Replace these helpers with importlib._bootstrap_external functions.
 def _run_code(code, run_globals, init_globals=None,
@@ -150,14 +150,14 @@ def _get_module_details(mod_name, error=ImportError):
         raise error("%r is a namespace package and cannot be executed"
                                                                  % mod_name)
     try:
-        code = loader.get_code(mod_name)
+        code = loader.get_code(mod_name)  # type: ignore
     except ImportError as e:
         raise error(format(e)) from e
     if code is None:
         raise error("No code object available for %s" % mod_name)
     return mod_name, spec, code
 
-class _Error(Exception):
+class _Error(ImportError):
     """Error that _run_module_as_main() should report without a traceback"""
 
 # XXX ncoghlan: Should this be documented and made public?
@@ -188,7 +188,8 @@ def _run_module_as_main(mod_name, alter_argv=True):
         sys.exit(msg)
     main_globals = sys.modules["__main__"].__dict__
     if alter_argv:
-        sys.argv[0] = mod_spec.origin
+        if mod_spec.origin is not None:
+            sys.argv[0] = mod_spec.origin
     return _run_code(code, main_globals, None,
                      "__main__", mod_spec)
 
